@@ -1,4 +1,5 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import JSONResponse
 from eval_engine import api
 from core.schemas import (
     EvaluateResponseRequest,
@@ -18,19 +19,37 @@ def health_check():
 
 @app.post("/evaluate_response")
 def evaluate_response(request: EvaluateResponseRequest):
-    evaluation = api.evaluate_response(
-        request.question, request.answer, request.thread_id
-    )
-    return {"status": "success", "evaluation": evaluation}
+    try:
+        evaluation = api.evaluate_response(
+            request.question, request.answer, request.thread_id
+        )
+        return JSONResponse(content={"status": "success", "evaluation": evaluation})
+    except HTTPException as exc:
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"status": "error", "detail": exc.detail},
+        )
 
 @app.post("/ask_session_question")
 def ask_session_question(request: AskSessionQuestionRequest):
-    response = api.ask_session_question(
-        request.question, request.thread_id
-    )
-    return {"status": "success", "response": response}
+    try:
+        response = api.ask_session_question(
+            request.question, request.thread_id
+        )
+        return JSONResponse(content={"status": "success", "response": response})
+    except HTTPException as exc:
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"status": "error", "detail": exc.detail},
+        )
 
 @app.post("/generate_feedback")
 def generate_feedback(request: GenerateFeedbackRequest):
-    feedback = api.generate_feedback(request.thread_id)
-    return {"status": "success", "feedback": feedback}
+    try:
+        feedback = api.generate_feedback(request.thread_id)
+        return JSONResponse(content={"status": "success", "feedback": feedback})
+    except HTTPException as exc:
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"status": "error", "detail": exc.detail},
+        )
