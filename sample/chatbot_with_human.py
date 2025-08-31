@@ -17,10 +17,13 @@ os.environ["TAVILY_API_KEY"] = "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"
 os.environ["GOOGLE_API_KEY"] = "AIzaSyDWPc1-mnhS67XK-oW4P6MrZaFs2xpdRvU"
 llm = init_chat_model("google_genai:gemini-2.0-flash")
 
+
 class State(TypedDict):
     messages: Annotated[list, add_messages]
 
+
 graph_builder = StateGraph(State)
+
 
 @tool
 def human_assistance(query: str) -> str:
@@ -28,14 +31,17 @@ def human_assistance(query: str) -> str:
     human_response = interrupt({"query": query})
     return human_response["data"]
 
+
 tool = TavilySearch(max_results=2)
 tools = [tool, human_assistance]
 llm_with_tools = llm.bind_tools(tools)
 
+
 def chatbot(state: State):
     message = llm_with_tools.invoke(state["messages"])
-    assert(len(message.tool_calls) <= 1)
+    assert len(message.tool_calls) <= 1
     return {"messages": [message]}
+
 
 graph_builder.add_node("chatbot", chatbot)
 
@@ -54,33 +60,42 @@ graph = graph_builder.compile(checkpointer=memory, interrupt_before=["tools"])
 
 config = {"configurable": {"thread_id": "1"}}
 
+
 def stream_graph_updates(user_input: str):
-    events = list(graph.stream({"messages": [{"role": "user", "content": user_input}]}, config, stream_mode="values"))
-    
+    events = list(
+        graph.stream(
+            {"messages": [{"role": "user", "content": user_input}]},
+            config,
+            stream_mode="values",
+        )
+    )
+
     # Check if we're interrupted (waiting for human input)
     snapshot = graph.get_state(config)
-    
+
     # If we're at an interrupt point, handle it
     while snapshot.next:
         # Check if we need human assistance
         if "tools" in snapshot.next:
             # Get the last message to see if it's asking for human assistance
             last_message = snapshot.values["messages"][-1]
-            if hasattr(last_message, 'tool_calls') and last_message.tool_calls:
+            if hasattr(last_message, "tool_calls") and last_message.tool_calls:
                 for tool_call in last_message.tool_calls:
                     if tool_call["name"] == "human_assistance":
                         # Extract the query from the tool call
                         query = tool_call["args"]["query"]
                         print(f"\n🤖 AI is requesting human assistance:")
                         print(f"Query: {query}")
-                        
+
                         # Get human response
                         human_response = input("Human Expert: ")
-                        
+
                         # Resume with human response
                         human_command = Command(resume={"data": human_response})
-                        events = list(graph.stream(human_command, config, stream_mode="values"))
-                        
+                        events = list(
+                            graph.stream(human_command, config, stream_mode="values")
+                        )
+
                         # Update snapshot
                         snapshot = graph.get_state(config)
                         break
@@ -90,11 +105,12 @@ def stream_graph_updates(user_input: str):
                 snapshot = graph.get_state(config)
         else:
             break
-    
+
     # Print the final messages
     for event in events:
         if "messages" in event:
             event["messages"][-1].pretty_print()
+
 
 def run_conversation():
     while True:
@@ -114,6 +130,7 @@ def run_conversation():
             print("User: " + user_input)
             stream_graph_updates(user_input)
             break
+
 
 # Start the conversation
 if __name__ == "__main__":

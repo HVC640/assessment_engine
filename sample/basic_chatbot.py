@@ -12,6 +12,7 @@ from langchain.chat_models import init_chat_model
 os.environ["GOOGLE_API_KEY"] = "AIzaSyDWPc1-mnhS67XK-oW4P6MrZaFs2xpdRvU"
 llm = init_chat_model("google_genai:gemini-2.0-flash")
 
+
 class State(TypedDict):
     messages: Annotated[list, add_messages]
 
@@ -30,6 +31,7 @@ graph_builder.add_node("chatbot", chatbot)
 graph_builder.add_edge(START, "chatbot")
 graph_builder.add_edge("chatbot", END)
 graph = graph_builder.compile()
+
 
 def stream_graph_updates(user_input: str):
     for event in graph.stream({"messages": [{"role": "user", "content": user_input}]}):
