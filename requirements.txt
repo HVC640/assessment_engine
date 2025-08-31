@@ -4,11 +4,13 @@ aiosignal==1.4.0
 annotated-types==0.7.0
 anyio==4.8.0
 attrs==25.3.0
+black==25.1.0
 cachetools==5.5.2
 certifi==2024.12.14
 charset-normalizer==3.4.3
 click==8.2.1
 colorama==0.4.6
+colorlog==6.9.0
 fastapi==0.116.1
 filetype==1.2.0
 frozenlist==1.7.0
@@ -36,10 +38,13 @@ langgraph-prebuilt==0.6.4
 langgraph-sdk==0.2.4
 langsmith==0.4.21
 multidict==6.6.4
+mypy_extensions==1.1.0
 ollama==0.4.7
 orjson==3.11.3
 ormsgpack==1.10.0
 packaging==25.0
+pathspec==0.12.1
+platformdirs==4.4.0
 propcache==0.3.2
 proto-plus==1.26.1
 protobuf==6.32.0
