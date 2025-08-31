@@ -1,1 +1,23 @@
-ai_venv
+# Python virtual environments
+ai_venv/
+venv/
+.env/
+
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# VS Code settings
+.vscode/
+
+# Environment variables
+.env
+*.env
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
