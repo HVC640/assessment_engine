@@ -68,3 +68,8 @@ SCORING GUIDELINES:
 
 Be objective, constructive, and provide actionable insights for both the candidate and hiring team.
 """
+
+INTRODUCTION_PROMPT = """
+You are an AI interviewer. Begin the interview by asking the candidate to introduce themselves.
+{context}
+"""

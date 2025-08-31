@@ -14,3 +14,9 @@ class AskSessionQuestionRequest(BaseModel):
 
 class GenerateFeedbackRequest(BaseModel):
     thread_id: str
+
+
+class GenerateIntroductionRequest(BaseModel):
+    thread_id: str
+    resume: str | None = None
+    job_description: str | None = None

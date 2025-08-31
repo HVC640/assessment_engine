@@ -5,6 +5,7 @@ from core.schemas import (
     EvaluateResponseRequest,
     AskSessionQuestionRequest,
     GenerateFeedbackRequest,
+    GenerateIntroductionRequest,
 )
 
 app = FastAPI(title="Assessment Engine API", version="1.0.0")
@@ -51,6 +52,22 @@ def generate_feedback(request: GenerateFeedbackRequest):
     try:
         feedback = api.generate_feedback(request.thread_id)
         return JSONResponse(content={"status": "success", "feedback": feedback})
+    except HTTPException as exc:
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"status": "error", "detail": exc.detail},
+        )
+
+
+@app.post("/generate_introduction")
+def generate_introduction(request: GenerateIntroductionRequest):
+    try:
+        introduction = api.generate_intoduction(
+            thread_id=request.thread_id,
+            resume=request.resume,
+            job_description=request.job_description,
+        )
+        return JSONResponse(content={"status": "success", "introduction": introduction})
     except HTTPException as exc:
         return JSONResponse(
             status_code=exc.status_code,
